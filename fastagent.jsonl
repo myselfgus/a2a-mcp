@@ -1,0 +1,2 @@
+{"level":"ERROR","timestamp":"2025-10-25T00:42:47.395159","namespace":"fast_agent.mcp.mcp_agent_client_session","message":"send_request failed: Connection closed"}
+{"level":"ERROR","timestamp":"2025-10-25T00:42:47.396328","namespace":"fast_agent.mcp.mcp_connection_manager","message":"fetch: Lifecycle task encountered an error: unhandled errors in a TaskGroup (1 sub-exception)","data":{"exc_info":true,"data":{"progress_action":"Error","server_name":"fetch"}}}
