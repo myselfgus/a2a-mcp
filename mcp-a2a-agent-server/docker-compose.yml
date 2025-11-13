@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # A2A Multi-Workflow Server (Python)
+  a2a-server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: a2a-server
+    ports:
+      - "9999:9999"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9999/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - a2a-network
+    restart: unless-stopped
+
+  # MCP A2A Agent Server (Node.js)
+  mcp-agent-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-agent-server
+    depends_on:
+      a2a-server:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - A2A_HOST=a2a-server
+      - A2A_PORT=9999
+      - A2A_ENABLED=true
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - a2a-network
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+networks:
+  a2a-network:
+    driver: bridge
+    name: a2a-network
+
+volumes:
+  logs:
+    driver: local
