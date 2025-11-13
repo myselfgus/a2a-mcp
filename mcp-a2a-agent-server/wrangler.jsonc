@@ -1,0 +1,152 @@
+{
+  // A2A Agent Server Configuration for Cloudflare Workers
+  "name": "a2a-agent-server",
+  "main": "src/dispatcher.ts",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Node.js compatibility
+  "node_compat": true,
+
+  // Durable Objects configuration
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "DISPATCHER",
+        "class_name": "A2ARPC",
+        "script_name": "a2a-agent-server"
+      }
+    ]
+  },
+
+  // Export the Durable Object class
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["A2ARPC"]
+    }
+  ],
+
+  // Service bindings to other workers/services
+  "services": [
+    {
+      "binding": "META_MCP",
+      "service": "meta-mcp",
+      "entrypoint": "MetaMCPRPC"
+    },
+    {
+      "binding": "WORKER_PUBLISHER",
+      "service": "worker-publisher",
+      "entrypoint": "WorkerPublisherRPC"
+    },
+    {
+      "binding": "MCP_CLIENT",
+      "service": "mcp-client",
+      "entrypoint": "MCPClientRPC"
+    },
+    {
+      "binding": "CONTAINER_MANAGER",
+      "service": "container-manager",
+      "entrypoint": "ContainerManagerRPC"
+    }
+  ],
+
+  // Environment variables
+  "vars": {
+    "A2A_ENABLED": "true",
+    "A2A_HOST": "localhost",
+    "A2A_PORT": "9999",
+    "LOG_LEVEL": "info",
+    "MAX_SUBAGENTS": "4",
+    "AGENT_TIMEOUT_MS": "120000"
+  },
+
+  // KV Namespaces (optional - for caching)
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "your-kv-namespace-id",
+      "preview_id": "your-preview-kv-namespace-id"
+    }
+  ],
+
+  // R2 Buckets (optional - for storage)
+  "r2_buckets": [
+    {
+      "binding": "STORAGE",
+      "bucket_name": "a2a-agent-storage",
+      "preview_bucket_name": "a2a-agent-storage-preview"
+    }
+  ],
+
+  // Build configuration
+  "build": {
+    "command": "npm run build"
+  },
+
+  // Limits and quotas
+  "limits": {
+    "cpu_ms": 30000
+  },
+
+  // Observability
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1.0
+  },
+
+  // Routes (if deploying to a domain)
+  "routes": [
+    {
+      "pattern": "a2a-agents.example.com/*",
+      "zone_name": "example.com"
+    }
+  ],
+
+  // Environment-specific overrides
+  "env": {
+    // Development environment
+    "dev": {
+      "vars": {
+        "A2A_HOST": "localhost",
+        "A2A_PORT": "9999",
+        "LOG_LEVEL": "debug"
+      }
+    },
+
+    // Staging environment
+    "staging": {
+      "name": "a2a-agent-server-staging",
+      "vars": {
+        "A2A_HOST": "a2a-server-staging",
+        "A2A_PORT": "9999",
+        "LOG_LEVEL": "info"
+      },
+      "routes": [
+        {
+          "pattern": "a2a-agents-staging.example.com/*",
+          "zone_name": "example.com"
+        }
+      ]
+    },
+
+    // Production environment
+    "production": {
+      "name": "a2a-agent-server-prod",
+      "vars": {
+        "A2A_HOST": "a2a-server-prod",
+        "A2A_PORT": "9999",
+        "LOG_LEVEL": "warn"
+      },
+      "routes": [
+        {
+          "pattern": "a2a-agents.example.com/*",
+          "zone_name": "example.com"
+        }
+      ],
+      "limits": {
+        "cpu_ms": 50000
+      }
+    }
+  }
+}

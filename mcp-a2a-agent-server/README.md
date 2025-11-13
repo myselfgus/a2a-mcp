@@ -5,9 +5,11 @@ A production-ready Model Context Protocol (MCP) server featuring 12 specialized 
 ## 🌟 Features
 
 - **12 Specialized Agents**: Production-ready agents for various domains
+- **RPC Communication**: Native Cloudflare Workers RPC using WorkerEntrypoint pattern
 - **A2A Integration**: Seamless integration with A2A multi-workflow server
 - **Parallel Execution**: Up to 4 concurrent subagents per tool with dependency resolution
 - **Claude Agents SDK**: Built using Claude's official agent framework
+- **Service Bindings**: Direct RPC to MetaMCP, WorkerPublisher, MCPClient, ContainerManager
 - **Type-Safe**: Full TypeScript implementation with Zod validation
 - **Production Ready**: Comprehensive logging, error handling, and monitoring
 - **Docker Support**: Complete containerization with docker-compose orchestration
@@ -15,9 +17,17 @@ A production-ready Model Context Protocol (MCP) server featuring 12 specialized 
 
 ## 🚀 Quick Start
 
+### Deployment Modes
+
+This server supports **two deployment modes**:
+
+1. **Cloudflare Workers** (RPC mode) - Recommended for production
+2. **Standalone MCP Server** (stdio mode) - For local development
+
 ### Prerequisites
 
 - Node.js 20+
+- Cloudflare Workers account (for RPC deployment)
 - Docker and Docker Compose (optional, for containerized deployment)
 - Python 3.13+ (for A2A server)
 
@@ -50,7 +60,7 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### Running Locally
+### Running Locally (MCP Mode)
 
 ```bash
 # Terminal 1: Start A2A server (from parent directory)
@@ -59,6 +69,22 @@ python a2a_multi_workflow_server.py
 
 # Terminal 2: Start MCP server
 npm start
+```
+
+### Cloudflare Workers Deployment (RPC Mode)
+
+```bash
+# Development
+npm run wrangler:dev
+
+# Deploy to staging
+npm run wrangler:deploy:staging
+
+# Deploy to production
+npm run wrangler:deploy:production
+
+# View live logs
+npm run wrangler:logs
 ```
 
 ### Development Mode
