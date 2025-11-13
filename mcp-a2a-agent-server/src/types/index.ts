@@ -111,5 +111,8 @@ export interface ServiceHealth {
   uptime: number;
   a2aServerConnected: boolean;
   activeAgents: number;
+  agents: string[];
+  a2aServer?: { connected: boolean; serverUrl: string };
+  metadata?: Record<string, any>;
   lastError?: string;
 }
